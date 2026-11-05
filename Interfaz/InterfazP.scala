@@ -1,3 +1,4 @@
+package interfaz
 case class Anuncio(id: String, gastoUsd: Double, conversaciones: Int, ventas: Int, ingresoBs: Double)
 case class Metricas(costoPorConversacion: Double, tasaCierre: Double, roas: Double, utilidadUsd: Double)
 case class Configuracion(minConversaciones: Int, roasEscalar: Double, cierreEscalar: Double, tipoCambio: Double)

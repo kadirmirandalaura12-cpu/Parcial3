@@ -1,3 +1,4 @@
+
 case class Anuncio(
 id: String, 
 gastoUsd: Double, 
@@ -73,7 +74,7 @@ object Proyecto {
   def describirDiagnostico(d: Diagnostico): String =
     d match
       case TodoBien => "Todo bien"
-      case InteresBajo => "Interes bajo: cada conversacion sale cara"
+      case InteresBajo => "Interes bajo: cada conversacion es mas cara"
       case CierreBajo => "Cierre bajo: hablan pero no compran"
 
   def describirEstado(e: EstadoProducto): String =
@@ -167,10 +168,10 @@ object Proyecto {
     val productos: List[Producto] = List(curso, plantillas)
     val anuncios: List[Anuncio] = todosLosAnuncios(productos)
 
-    println("=== ANUNCIOS ===")
+    println("ANUNCIOS")
     imprimirLista(anuncios, a => mostrarAnuncio(a, config))
 
-    println("=== TOTALES ===")
+    println("TOTALES")
     println(s"Gasto: ${gastoTotal(anuncios)} USD")
     println(s"Conversaciones: ${conversacionesTotal(anuncios)}")
     println(s"Ventas: ${ventasTotal(anuncios)}")
@@ -178,7 +179,7 @@ object Proyecto {
     println(s"ROAS global: ${redondear(roasGlobal(anuncios, config))}")
     println(s"Utilidad: ${redondear(utilidadGlobal(anuncios, config))} USD")
 
-    println("=== MEJOR Y PEOR ===")
+    println("MEJOR Y PEOR")
     val tasa: Anuncio => Double = a => calcularMetricas(a, config).tasaCierre
     val roas: Anuncio => Double = a => calcularMetricas(a, config).roas
     val costo: Anuncio => Double = a => -calcularMetricas(a, config).costoPorConversacion
@@ -187,30 +188,30 @@ object Proyecto {
     println(s"Mejor ROAS: ${mejorPor(anuncios, roas).id}")
     println(s"Peor ROAS: ${peorPor(anuncios, roas).id}")
 
-    println("=== RANKINGS ===")
+    println("RANKINGS")
     println(s"Por ROAS: ${ordenarPor(anuncios, roas).map(a => a.id)}")
     println(s"Por tasa de cierre: ${ordenarPor(anuncios, tasa).map(a => a.id)}")
     println(s"Por costo por conversacion (menor primero): ${ordenarPor(anuncios, costo).map(a => a.id)}")
 
-    println("=== FILTRAR ===")
+    println("FILTRAR")
     println(s"Para escalar: ${filtrarPorRecomendacion(anuncios, config, Escalar).map(a => a.id)}")
     println(s"Para pausar: ${filtrarPorRecomendacion(anuncios, config, Pausar).map(a => a.id)}")
 
-    println("=== PRODUCTOS POR ESTADO ===")
+    println("PRODUCTOS POR ESTADO")
     println(s"En uso: ${filtrarPorEstado(productos, EnUso).map(p => p.nombre)}")
     println(s"Candidatos: ${filtrarPorEstado(productos, Candidato).map(p => p.nombre)}")
 
-    println("=== PRODUCTOS ===")
+    println("PRODUCTOS")
     imprimirLista(productos, p => resumenProducto(p, config))
 
-    println("=== CAMBIOS (copy) ===")
+    println("CAMBIOS (copy)")
     val plantillasEnUso: Producto = cambiarEstado(plantillas, EnUso)
     println(s"Antes: ${describirEstado(plantillas.estado)} | Despues: ${describirEstado(plantillasEnUso.estado)}")
     val v4: Anuncio = Anuncio("V4", 6.0, 30, 3, 60.0)
     val cursoNuevo: Producto = registrarAnuncio(curso, v4)
     println(s"Anuncios antes: ${curso.anuncios.length} | despues: ${cursoNuevo.anuncios.length}")
 
-    println("=== MEJOR ANUNCIO DE TEXTOS (generico) ===")
+    println("MEJOR ANUNCIO DE TEXTOS (generico)")
     println(mejorPor(List("sc", "scala", "fp"), t => t.length * 1.0))
   }
 }
