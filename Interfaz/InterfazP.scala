@@ -1,7 +1,32 @@
 package interfaz
-case class Anuncio(id: String, gastoUsd: Double, conversaciones: Int, ventas: Int, ingresoBs: Double)
-case class Metricas(costoPorConversacion: Double, tasaCierre: Double, roas: Double, utilidadUsd: Double)
-case class Configuracion(minConversaciones: Int, roasEscalar: Double, cierreEscalar: Double, tipoCambio: Double)
+
+case class Anuncio(
+  id: String,
+  gastoUsd: Double,
+  conversaciones: Int,
+  ventas: Int,
+  ingresoBs: Double) {
+
+  def ingresoUsd(c: Configuracion): Double = ingresoBs / c.tipoCambio
+
+  def costoPorConversacion: Double =
+    if conversaciones == 0 then 0.0 else gastoUsd / conversaciones
+
+  def tasaCierre: Double =
+    if conversaciones == 0 then 0.0 else ventas * 1.0 / conversaciones
+}
+
+case class Metricas(
+  costoPorConversacion: Double,
+  tasaCierre: Double,
+  roas: Double,
+  utilidadUsd: Double)
+
+case class Configuracion(
+  minConversaciones: Int,
+  roasEscalar: Double,
+  cierreEscalar: Double,
+  tipoCambio: Double)
 
 sealed trait EstadoProducto
 case object Candidato extends EstadoProducto
@@ -20,18 +45,20 @@ case object TodoBien extends Diagnostico
 case object InteresBajo extends Diagnostico
 case object CierreBajo extends Diagnostico
 
-case class Producto(nombre: String, precioBs: Double, estado: EstadoProducto, anuncios: List[Anuncio])
+case class Producto(
+  nombre: String,
+  precioBs: Double,
+  estado: EstadoProducto,
+  anuncios: List[Anuncio])
 
 object Proyecto {
 
   def redondear(x: Double): Double = Math.round(x * 100) / 100.0
 
   def calcularMetricas(a: Anuncio, c: Configuracion): Metricas = {
-    val ingresoUsd: Double = a.ingresoBs / c.tipoCambio
-    val costo: Double = if a.conversaciones == 0 then 0.0 else a.gastoUsd / a.conversaciones
-    val cierre: Double = if a.conversaciones == 0 then 0.0 else a.ventas * 1.0 / a.conversaciones
+    val ingresoUsd: Double = a.ingresoUsd(c)
     val roas: Double = if a.gastoUsd == 0 then 0.0 else ingresoUsd / a.gastoUsd
-    Metricas(costo, cierre, roas, ingresoUsd - a.gastoUsd)
+    Metricas(a.costoPorConversacion, a.tasaCierre, roas, ingresoUsd - a.gastoUsd)
   }
 
   def recomendar(a: Anuncio, m: Metricas, c: Configuracion): Recomendacion =
@@ -57,7 +84,7 @@ object Proyecto {
   def describirDiagnostico(d: Diagnostico): String =
     d match
       case TodoBien => "Todo bien"
-      case InteresBajo => "Interes bajo: cada conversacion sale cara"
+      case InteresBajo => "Interes bajo: cada conversacion es mas cara"
       case CierreBajo => "Cierre bajo: hablan pero no compran"
 
   def describirEstado(e: EstadoProducto): String =
@@ -67,17 +94,20 @@ object Proyecto {
       case Revisar => "Revisar"
       case Descartado => "Descartado"
 
+  def sumarPor[A](lista: List[A], criterio: A => Double): Double =
+    lista.foldLeft(0.0)((acum, x) => acum + criterio(x))
+
   def gastoTotal(anuncios: List[Anuncio]): Double =
-    anuncios.foldLeft(0.0)((acum, a) => acum + a.gastoUsd)
+    sumarPor(anuncios, a => a.gastoUsd)
 
-  def conversacionesTotal(anuncios: List[Anuncio]): Int =
-    anuncios.foldLeft(0)((acum, a) => acum + a.conversaciones)
+  def conversacionesTotal(anuncios: List[Anuncio]): Long =
+    Math.round(sumarPor(anuncios, a => a.conversaciones))
 
-  def ventasTotal(anuncios: List[Anuncio]): Int =
-    anuncios.foldLeft(0)((acum, a) => acum + a.ventas)
+  def ventasTotal(anuncios: List[Anuncio]): Long =
+    Math.round(sumarPor(anuncios, a => a.ventas))
 
   def ingresoTotalBs(anuncios: List[Anuncio]): Double =
-    anuncios.foldLeft(0.0)((acum, a) => acum + a.ingresoBs)
+    sumarPor(anuncios, a => a.ingresoBs)
 
   def roasGlobal(anuncios: List[Anuncio], c: Configuracion): Double =
     if gastoTotal(anuncios) == 0 then 0.0
@@ -302,29 +332,31 @@ function cambiar() {
   }
 
   def main(args: Array[String]): Unit = {
-    val config: Configuracion = Configuracion(20, 2.0, 0.15, 10.0)
+    val config: Configuracion = Configuracion(20, 2.0, 0.15, 12.05)
 
-    val v1: Anuncio = Anuncio("V1", 10.0, 40, 8, 200.0)
-    val v2: Anuncio = Anuncio("V2", 8.0, 20, 2, 50.0)
-    val v3: Anuncio = Anuncio("V3", 5.0, 25, 6, 150.0)
+    val v1: Anuncio = Anuncio("V1", 10.0, 40, 8, 392.0)
+    val v2: Anuncio = Anuncio("V2", 8.0, 20, 1, 49.0)
+    val v3: Anuncio = Anuncio("V3", 5.0, 25, 6, 174.0)
+    val v4: Anuncio = Anuncio("V4", 3.6, 12, 3, 87.0)
+    val v5: Anuncio = Anuncio("V5", 20.0, 30, 5, 245.0)
 
-    val curso: Producto = Producto("Curso Excel", 49.0, EnUso, List(v1, v2))
-    val plantillas: Producto = Producto("Plantillas", 29.0, Candidato, List(v3))
+    val curso: Producto = Producto("Curso Excel", 49.0, EnUso, List(v1, v2, v5))
+    val plantillas: Producto = Producto("Plantillas", 29.0, Candidato, List(v3, v4))
     val productos: List[Producto] = List(curso, plantillas)
     val anuncios: List[Anuncio] = todosLosAnuncios(productos)
 
-    println("=== ANUNCIOS ===")
+    println("ANUNCIOS")
     imprimirLista(anuncios, a => mostrarAnuncio(a, config))
 
-    println("=== TOTALES ===")
-    println(s"Gasto: ${gastoTotal(anuncios)} USD")
+    println("TOTALES")
+    println(s"Gasto: ${redondear(gastoTotal(anuncios))} USD")
     println(s"Conversaciones: ${conversacionesTotal(anuncios)}")
     println(s"Ventas: ${ventasTotal(anuncios)}")
     println(s"Ingreso: ${ingresoTotalBs(anuncios)} Bs")
     println(s"ROAS global: ${redondear(roasGlobal(anuncios, config))}")
     println(s"Utilidad: ${redondear(utilidadGlobal(anuncios, config))} USD")
 
-    println("=== MEJOR Y PEOR ===")
+    println("MEJOR Y PEOR")
     val tasa: Anuncio => Double = a => calcularMetricas(a, config).tasaCierre
     val roas: Anuncio => Double = a => calcularMetricas(a, config).roas
     val costo: Anuncio => Double = a => -calcularMetricas(a, config).costoPorConversacion
@@ -333,33 +365,39 @@ function cambiar() {
     println(s"Mejor ROAS: ${mejorPor(anuncios, roas).id}")
     println(s"Peor ROAS: ${peorPor(anuncios, roas).id}")
 
-    println("=== RANKINGS ===")
+    println("RANKINGS")
     println(s"Por ROAS: ${ordenarPor(anuncios, roas).map(a => a.id)}")
     println(s"Por tasa de cierre: ${ordenarPor(anuncios, tasa).map(a => a.id)}")
     println(s"Por costo por conversacion (menor primero): ${ordenarPor(anuncios, costo).map(a => a.id)}")
 
-    println("=== FILTRAR ===")
+    println("FILTRAR")
     println(s"Para escalar: ${filtrarPorRecomendacion(anuncios, config, Escalar).map(a => a.id)}")
+    println(s"Para observar: ${filtrarPorRecomendacion(anuncios, config, Observar).map(a => a.id)}")
     println(s"Para pausar: ${filtrarPorRecomendacion(anuncios, config, Pausar).map(a => a.id)}")
+    println(s"Esperando datos: ${filtrarPorRecomendacion(anuncios, config, EsperarDatos).map(a => a.id)}")
 
-    println("=== PRODUCTOS POR ESTADO ===")
+    println("PRODUCTOS POR ESTADO")
     println(s"En uso: ${filtrarPorEstado(productos, EnUso).map(p => p.nombre)}")
     println(s"Candidatos: ${filtrarPorEstado(productos, Candidato).map(p => p.nombre)}")
 
-    println("=== PRODUCTOS ===")
+    println("PRODUCTOS")
     imprimirLista(productos, p => resumenProducto(p, config))
 
-    println("=== CAMBIOS (copy) ===")
+    println("CAMBIOS (copy)")
     val plantillasEnUso: Producto = cambiarEstado(plantillas, EnUso)
-    println(s"Antes: ${describirEstado(plantillas.estado)} | Despues: ${describirEstado(plantillasEnUso.estado)}")
-    val v4: Anuncio = Anuncio("V4", 6.0, 30, 3, 60.0)
-    val cursoNuevo: Producto = registrarAnuncio(curso, v4)
-    println(s"Anuncios antes: ${curso.anuncios.length} | despues: ${cursoNuevo.anuncios.length}")
+    println(s"Plantillas antes: ${describirEstado(plantillas.estado)} | Despues: ${describirEstado(plantillasEnUso.estado)}")
+    val cursoEnRevision: Producto = cambiarEstado(curso, Revisar)
+    println(s"Curso Excel antes: ${describirEstado(curso.estado)} | Despues: ${describirEstado(cursoEnRevision.estado)}")
+    val plantillasDescartadas: Producto = cambiarEstado(plantillas, Descartado)
+    println(s"Plantillas antes: ${describirEstado(plantillas.estado)} | Despues: ${describirEstado(plantillasDescartadas.estado)}")
+    val v6: Anuncio = Anuncio("V6", 6.0, 30, 3, 147.0)
+    val cursoNuevo: Producto = registrarAnuncio(curso, v6)
+    println(s"Anuncios del curso antes: ${curso.anuncios.length} | despues: ${cursoNuevo.anuncios.length}")
 
-    println("=== MEJOR ANUNCIO DE TEXTOS (generico) ===")
+    println("MEJOR ANUNCIO DE TEXTOS (generico)")
     println(mejorPor(List("sc", "scala", "fp"), t => t.length * 1.0))
 
-    println("=== INTERFAZ ===")
+    println("INTERFAZ")
     java.nio.file.Files.writeString(java.nio.file.Path.of("panel.html"), generarHtml(productos, config))
     println("Panel generado: panel.html")
   }
