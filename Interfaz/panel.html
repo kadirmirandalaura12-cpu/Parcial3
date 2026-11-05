@@ -45,26 +45,28 @@ footer { text-align:center; color:var(--suave); font-size:13px; padding:0 24px 3
 <body>
 <header>
 <h1>Panel de rendimiento de anuncios</h1>
-<p>Tipo de cambio: 10.0 Bs por USD &middot; M&iacute;nimo de conversaciones: 20 &middot; ROAS para escalar: 2.0 &middot; Cierre para escalar: 15.0%</p>
+<p>Tipo de cambio: 12.05 Bs por USD &middot; M&iacute;nimo de conversaciones: 20 &middot; ROAS para escalar: 2.0 &middot; Cierre para escalar: 15.0%</p>
 </header>
 <main>
 <h2>Totales</h2>
 <div class="cards">
-<div class="card"><span>Gasto total</span><b>23.0 USD</b></div>
-<div class="card"><span>Conversaciones</span><b>85</b></div>
-<div class="card"><span>Ventas</span><b>16</b></div>
-<div class="card"><span>Ingreso</span><b>400.0 Bs</b></div>
-<div class="card"><span>ROAS global</span><b>1.74</b></div>
-<div class="card"><span>Utilidad</span><b>17.0 USD</b></div>
+<div class="card"><span>Gasto total</span><b>46.6 USD</b></div>
+<div class="card"><span>Conversaciones</span><b>127</b></div>
+<div class="card"><span>Ventas</span><b>23</b></div>
+<div class="card"><span>Ingreso</span><b>947.0 Bs</b></div>
+<div class="card"><span>ROAS global</span><b>1.69</b></div>
+<div class="card"><span>Utilidad</span><b>31.99 USD</b></div>
 
 </div>
 <h2>Anuncios</h2>
 <div class="tabla">
 <table>
 <tr><th>Anuncio</th><th>Gasto USD</th><th>Conv.</th><th>Ventas</th><th>Costo/conv. USD</th><th>Cierre</th><th>ROAS</th><th>Utilidad USD</th><th>Recomendaci&oacute;n</th><th>Diagn&oacute;stico</th></tr>
-<tr><td><b>V1</b></td><td>10.0</td><td>40</td><td>8</td><td>0.25</td><td>20.0%</td><td>2.0</td><td class="pos">10.0</td><td><span class="badge escalar">Escalar</span></td><td>Todo bien</td></tr>
-<tr><td><b>V2</b></td><td>8.0</td><td>20</td><td>2</td><td>0.4</td><td>10.0%</td><td>0.63</td><td class="neg">-3.0</td><td><span class="badge pausar">Pausar</span></td><td>Cierre bajo: hablan pero no compran</td></tr>
-<tr><td><b>V3</b></td><td>5.0</td><td>25</td><td>6</td><td>0.2</td><td>24.0%</td><td>3.0</td><td class="pos">10.0</td><td><span class="badge escalar">Escalar</span></td><td>Todo bien</td></tr>
+<tr><td><b>V1</b></td><td>10.0</td><td>40</td><td>8</td><td>0.25</td><td>20.0%</td><td>3.25</td><td class="pos">22.53</td><td><span class="badge escalar">Escalar</span></td><td>Todo bien</td></tr>
+<tr><td><b>V2</b></td><td>8.0</td><td>20</td><td>1</td><td>0.4</td><td>5.0%</td><td>0.51</td><td class="neg">-3.93</td><td><span class="badge pausar">Pausar</span></td><td>Cierre bajo: hablan pero no compran</td></tr>
+<tr><td><b>V5</b></td><td>20.0</td><td>30</td><td>5</td><td>0.67</td><td>16.67%</td><td>1.02</td><td class="pos">0.33</td><td><span class="badge observar">Observar</span></td><td>Interes bajo: cada conversacion es mas cara</td></tr>
+<tr><td><b>V3</b></td><td>5.0</td><td>25</td><td>6</td><td>0.2</td><td>24.0%</td><td>2.89</td><td class="pos">9.44</td><td><span class="badge escalar">Escalar</span></td><td>Todo bien</td></tr>
+<tr><td><b>V4</b></td><td>3.6</td><td>12</td><td>3</td><td>0.3</td><td>25.0%</td><td>2.01</td><td class="pos">3.62</td><td><span class="badge esperar">Esperar datos</span></td><td>Todo bien</td></tr>
 
 </table>
 </div>
@@ -75,23 +77,29 @@ footer { text-align:center; color:var(--suave); font-size:13px; padding:0 24px 3
 <option value="cierre">Ordenar por tasa de cierre</option>
 <option value="costo">Ordenar por costo por conversaci&oacute;n</option>
 </select>
-<ol id="rank-roas" style="display:block"><li><b>V3</b><span>ROAS 3.0</span></li>
-<li><b>V1</b><span>ROAS 2.0</span></li>
-<li><b>V2</b><span>ROAS 0.63</span></li>
-</ol><ol id="rank-cierre" style="display:none"><li><b>V3</b><span>24.0% de cierre</span></li>
+<ol id="rank-roas" style="display:block"><li><b>V1</b><span>ROAS 3.25</span></li>
+<li><b>V3</b><span>ROAS 2.89</span></li>
+<li><b>V4</b><span>ROAS 2.01</span></li>
+<li><b>V5</b><span>ROAS 1.02</span></li>
+<li><b>V2</b><span>ROAS 0.51</span></li>
+</ol><ol id="rank-cierre" style="display:none"><li><b>V4</b><span>25.0% de cierre</span></li>
+<li><b>V3</b><span>24.0% de cierre</span></li>
 <li><b>V1</b><span>20.0% de cierre</span></li>
-<li><b>V2</b><span>10.0% de cierre</span></li>
+<li><b>V5</b><span>16.67% de cierre</span></li>
+<li><b>V2</b><span>5.0% de cierre</span></li>
 </ol><ol id="rank-costo" style="display:none"><li><b>V3</b><span>0.2 USD por conversaci&oacute;n</span></li>
 <li><b>V1</b><span>0.25 USD por conversaci&oacute;n</span></li>
+<li><b>V4</b><span>0.3 USD por conversaci&oacute;n</span></li>
 <li><b>V2</b><span>0.4 USD por conversaci&oacute;n</span></li>
+<li><b>V5</b><span>0.67 USD por conversaci&oacute;n</span></li>
 </ol>
 </div>
 <h2>Productos</h2>
 <div class="tabla">
 <table>
 <tr><th>Producto</th><th>Estado</th><th>Precio</th><th>Anuncios</th><th>Gasto USD</th><th>ROAS</th><th>Utilidad USD</th></tr>
-<tr><td><b>Curso Excel</b></td><td><span class="badge enuso">En uso</span></td><td>49.0 Bs</td><td>2</td><td>18.0</td><td>1.39</td><td class="pos">7.0</td></tr>
-<tr><td><b>Plantillas</b></td><td><span class="badge candidato">Candidato</span></td><td>29.0 Bs</td><td>1</td><td>5.0</td><td>3.0</td><td class="pos">10.0</td></tr>
+<tr><td><b>Curso Excel</b></td><td><span class="badge enuso">En uso</span></td><td>49.0 Bs</td><td>3</td><td>38.0</td><td>1.5</td><td class="pos">18.93</td></tr>
+<tr><td><b>Plantillas</b></td><td><span class="badge candidato">Candidato</span></td><td>29.0 Bs</td><td>2</td><td>8.6</td><td>2.52</td><td class="pos">13.06</td></tr>
 
 </table>
 </div>
